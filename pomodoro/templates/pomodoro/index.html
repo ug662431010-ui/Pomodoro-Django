@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pomodoro Timer | {{ task_name }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1c1f26, #2c3e50);
+            min-height: 100vh;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 60px;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .hamburger-menu {
+            position: relative;
+        }
+
+        #hamburger-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 45px;
+            background-color: #333;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            z-index: 1000;
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ff6b6b;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 40px 20px;
+        }
+
+        .task-display {
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            max-width: 90%;
+        }
+
+        .task-display h2 {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .timer {
+            font-size: 8em;
+            font-weight: 700;
+            letter-spacing: 5px;
+            padding: 20px 40px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .status-label {
+            font-size: 1.5em;
+            margin: 30px 0;
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .mode-buttons {
+            margin-bottom: 20px;
+        }
+
+        .mode-buttons button {
+            padding: 8px 20px;
+            margin: 0 8px;
+            font-size: 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #444;
+        }
+
+        .mode-buttons button.active {
+            background-color: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .control-buttons button {
+            padding: 12px 35px;
+            margin: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .start {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pause {
+            background-color: #FFC107;
+            color: #333;
+        }
+
+        .reset {
+            background-color: #E91E63;
+            color: white;
+        }
+
+        .end-task-wrapper {
+            margin-top: 30px;
+        }
+
+        #endTaskBtn {
+            padding: 10px 25px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .activity-container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .activity-container h2,
+        .activity-container h3 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .activity-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .activity-container th,
+        .activity-container td {
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: left;
+        }
+
+        .activity-container th {
+            background: rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        Pomodoro
+    </div>
+
+    <div class="hamburger-menu">
+
+        <button id="hamburger-btn">
+            &#9776;
+        </button>
+
+        <div id="dropdown-menu" class="dropdown-content">
+
+            <a href="{% url 'pomodoro_timer' %}">
+                Timer
+            </a>
+
+            <a href="#activity-section">
+                📝 Activity & Stats
+            </a>
+
+            <a href="#">
+                👤 Profile
+            </a>
+
+            <a href="{% url 'logout' %}">
+                🚪 Logout ({{ username }})
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<div class="timer-container">
+
+    <div class="task-display">
+        <h2>
+            Current Task: {{ task_name }}
+        </h2>
+    </div>
+
+
+    <div class="timer" id="timerDisplay">
+        25:00
+    </div>
+
+    <div id="statusLabel" class="status-label">
+        Focus Mode
+    </div>
+
+
+    <div class="mode-buttons">
+
+        <button id="focusBtn"
+                class="active"
+                onclick="setMode('focus')">
+            Focus (25m)
+        </button>
+
+        <button id="breakBtn"
+                onclick="setMode('break')">
+            Short Break (5m)
+        </button>
+
+        <button id="longBtn"
+                onclick="setMode('long')">
+            Long Break (15m)
+        </button>
+
+    </div>
+
+
+    <div class="control-buttons">
+
+        <button class="start"
+                onclick="startTimer()">
+            Start
+        </button>
+
+        <button class="pause"
+                onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button class="reset"
+                onclick="resetTimer()">
+            Reset
+        </button>
+
+    </div>
+
+
+    {% if current_activity_id %}
+
+    <div class="end-task-wrapper">
+
+        <button id="endTaskBtn">
+            End Current Task
+        </button>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<div id="activity-section"></div>
+
+<div class="activity-container">
+
+    <h2>📝 My Activity & Stats</h2>
+
+    <h3>📊 Time Statistics</h3>
+
+    <p>
+        Total Time Focused:
+        <strong>{{ total_hours }} Hours</strong>
+        ({{ total_minutes }} minutes)
+    </p>
+
+
+    {% if activities %}
+
+        <h3>Activity History</h3>
+
+        <table>
+
+            <tr>
+                <th>Task Name</th>
+                <th>Description</th>
+                <th>Start Time</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+
+            {% for activity in activities %}
+
+            <tr>
+
+                <td>
+                    {{ activity.task_name }}
+                </td>
+
+                <td>
+                    {{ activity.task_description }}
+                </td>
+
+                <td>
+                    {{ activity.start_time|date:"Y-m-d H:i" }}
+                </td>
+
+                <td>
+                    {% if activity.duration_minutes %}
+                        {{ activity.duration_minutes }} min
+                    {% else %}
+                        Active
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if activity.end_time %}
+                        Completed
+                    {% else %}
+                        Active
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>
+            No activities recorded yet.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+
+let minutes = 25;
+let seconds = 0;
+let timer;
+let running = false;
+let currentMode = "focus";
+
+const timerDisplay =
+    document.getElementById("timerDisplay");
+
+const statusLabel =
+    document.getElementById("statusLabel");
+
+
+function updateDisplay() {
+
+    timerDisplay.textContent =
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+}
+
+
+function setMode(mode) {
+
+    if (running) {
+
+        if (!confirm(
+            "Timer is running. Are you sure you want to switch modes and reset?"
+        )) {
+            return;
+        }
+
+    }
+
+    clearInterval(timer);
+
+    running = false;
+
+    currentMode = mode;
+
+
+    document
+        .querySelectorAll('.mode-buttons button')
+        .forEach(btn => btn.classList.remove('active'));
+
+
+    if (mode === "focus") {
+
+        minutes = 25;
+
+        statusLabel.textContent = "Focus Mode";
+
+        document
+            .getElementById("focusBtn")
+            .classList.add("active");
+
+    }
+
+    else if (mode === "break") {
+
+        minutes = 5;
+
+        statusLabel.textContent = "Short Break";
+
+        document
+            .getElementById("breakBtn")
+            .classList.add("active");
+
+    }
+
+    else {
+
+        minutes = 15;
+
+        statusLabel.textContent = "Long Break";
+
+        document
+            .getElementById("longBtn")
+            .classList.add("active");
+
+    }
+
+    seconds = 0;
+
+    updateDisplay();
+
+}
+
+
+function startTimer() {
+
+    if (!running) {
+
+        running = true;
+
+        timer = setInterval(() => {
+
+            if (seconds === 0) {
+
+                if (minutes === 0) {
+
+                    clearInterval(timer);
+
+                    running = false;
+
+                    alert(
+                        `${statusLabel.textContent} complete!`
+                    );
+
+                    resetTimer();
+
+                    return;
+                }
+
+                minutes--;
+
+                seconds = 59;
+
+            }
+
+            else {
+
+                seconds--;
+
+            }
+
+            updateDisplay();
+
+        }, 1000);
+
+    }
+
+}
+
+
+function pauseTimer() {
+
+    clearInterval(timer);
+
+    running = false;
+
+}
+
+
+function resetTimer() {
+
+    setMode(currentMode);
+
+}
+
+
+document
+    .getElementById('hamburger-btn')
+    .addEventListener('click', function() {
+
+        document
+            .getElementById('dropdown-menu')
+            .classList.toggle('show');
+
+    });
+
+
+window.onclick = function(event) {
+
+    if (!event.target.matches('#hamburger-btn')) {
+
+        document
+            .getElementById('dropdown-menu')
+            .classList.remove('show');
+
+    }
+
+};
+
+
+updateDisplay();
+
+</script>
+
+</body>
+</html>

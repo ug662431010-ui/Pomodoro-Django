@@ -1,0 +1,59 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Start Task</title>
+    <link rel="icon" href="{% static 'images/pomodoro-logo.svg' %}" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <img class="brand-logo" src="{% static 'images/pomodoro-logo.svg' %}" alt="Pomodoro logo">
+
+        {% for message in messages %}
+            <p class="message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+
+        <h2>Login & Start Task</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('password')">👁️</span>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="form-group">
+                <label for="task_name">Task Name</label>
+                <input type="text" id="task_name" name="task_name" placeholder="Enter your current task name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="task_description">Task Description</label>
+                <textarea id="task_description" name="task_description" rows="2" placeholder="Describe your task briefly"></textarea>
+            </div>
+
+            <button type="submit">Login and start</button>
+
+            <p class="bottom-text">
+                Don't have an account? <a href="{% url 'register' %}">Register Now</a>
+            </p>
+        </form>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+</body>
+</html>

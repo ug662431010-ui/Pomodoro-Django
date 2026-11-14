@@ -1,0 +1,215 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <title>Pomodoro Timer | {{ task_name }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="icon" href="{% static 'images/pomodoro-logo.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/timer.css' %}">
+</head>
+
+<body data-start-url="{% url 'timer_start' %}" data-finish-url="{% url 'timer_finish' %}">
+
+<nav class="navbar">
+
+    <div class="logo">
+        <img src="{% static 'images/pomodoro-logo.svg' %}" alt="Pomodoro logo">
+        Pomodoro
+    </div>
+
+    <div class="hamburger-menu">
+
+        <button id="hamburger-btn">
+            &#9776;
+        </button>
+
+        <div id="dropdown-menu" class="dropdown-content">
+
+            <a href="{% url 'home' %}">
+                Timer
+            </a>
+
+            <a href="{% url 'about' %}">
+                About Pomodoro
+            </a>
+
+            <a href="{% url 'profile' %}">
+                👤 Profile
+            </a>
+
+            <a href="#activity-section">
+                📝 Activity & Stats
+            </a>
+
+            <a href="{% url 'logout' %}">
+                🚪 Logout ({{ username }})
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+{% for message in messages %}
+<p class="flash-message {{ message.tags }}">{{ message }}</p>
+{% endfor %}
+
+
+<div class="timer-container">
+
+    <div class="task-display">
+        <h2>
+            Current Task: {{ task_name }}
+        </h2>
+    </div>
+
+
+    <div class="timer" id="timerDisplay">
+        25:00
+    </div>
+
+    <div id="statusLabel" class="status-label">
+        Focus Mode
+    </div>
+
+
+    <div class="mode-buttons">
+
+        <button id="focusBtn"
+                class="active"
+                onclick="setMode('focus')">
+            Focus (25m)
+        </button>
+
+        <button id="breakBtn"
+                onclick="setMode('break')">
+            Short Break (5m)
+        </button>
+
+        <button id="longBtn"
+                onclick="setMode('long')">
+            Long Break (15m)
+        </button>
+
+    </div>
+
+
+    <div class="control-buttons">
+
+        <button class="start"
+                onclick="startTimer()">
+            Start
+        </button>
+
+        <button class="pause"
+                onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button class="reset"
+                onclick="resetTimer()">
+            Reset
+        </button>
+
+    </div>
+
+
+    {% if current_activity_id %}
+
+    <form id="endTaskForm" class="end-task-wrapper" method="POST" action="{% url 'end_task' %}">
+        {% csrf_token %}
+        <button type="button" id="endTaskBtn">
+            End Current Task
+        </button>
+    </form>
+
+    {% endif %}
+
+</div>
+
+
+<div id="activity-section"></div>
+
+<div class="activity-container">
+
+    <h2>📝 My Activity & Stats</h2>
+
+    <h3>📊 Time Statistics</h3>
+
+    <p>
+        Total Time Focused:
+        <strong>{{ total_hours }} Hours</strong>
+        ({{ total_minutes }} minutes)
+    </p>
+
+
+    {% if activities %}
+
+        <h3>Activity History</h3>
+
+        <table>
+
+            <tr>
+                <th>Task Name</th>
+                <th>Description</th>
+                <th>Start Time</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+
+            {% for activity in activities %}
+
+            <tr>
+
+                <td>
+                    {{ activity.task_name }}
+                </td>
+
+                <td>
+                    {{ activity.task_description }}
+                </td>
+
+                <td>
+                    {{ activity.start_time|date:"Y-m-d H:i" }}
+                </td>
+
+                <td>
+                    {% if activity.end_time %}{{ activity.duration_minutes }} min{% else %}Active{% endif %}
+                </td>
+
+                <td>
+                    {% if activity.end_time %}
+                        Completed
+                    {% else %}
+                        Active
+                    {% endif %}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
+
+    {% else %}
+
+        <p>
+            No activities recorded yet.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<script src="{% static 'js/timer.js' %}"></script>
+
+</body>
+</html>

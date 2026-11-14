@@ -1,0 +1,54 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Pomodoro</title>
+    <link rel="icon" href="{% static 'images/pomodoro-logo.svg' %}" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <img src="{% static 'images/pomodoro-logo.svg' %}" alt="Pomodoro logo">
+            Pomodoro
+        </div>
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Timer</a></li>
+            <li><a href="{% url 'about' %}" class="active">About Pomodoro</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main>
+        <div class="content-box">
+            <h1>About Pomodoro Technique</h1>
+            <p>
+                The <strong>Pomodoro Technique</strong> is a time management method developed by Francesco Cirillo in the late 1980s.
+                The main goal of this technique is to improve focus, productivity, and work efficiency by breaking tasks into short intervals called “Pomodoros,” typically lasting <strong>25 minutes</strong>, followed by a <strong>short break (5 minutes)</strong>, and a <strong>long break (15 minutes)</strong> after four cycles.
+            </p>
+
+            <h2>Objectives:</h2>
+            <ul>
+                <li>To help users maintain focus and reduce procrastination.</li>
+                <li>To increase productivity through structured work and rest cycles.</li>
+                <li>To encourage effective time tracking and self-discipline.</li>
+            </ul>
+
+            <h2>Benefits:</h2>
+            <ul>
+                <li>Improves concentration and prevents burnout.</li>
+                <li>Enhances task management and prioritization.</li>
+                <li>Builds consistent work habits and motivation.</li>
+            </ul>
+
+            <a href="{% url 'home' %}" class="back-btn">← Back to Timer</a>
+        </div>
+    </main>
+</body>
+</html>

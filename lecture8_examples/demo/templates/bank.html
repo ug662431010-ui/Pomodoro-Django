@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Bank</title></head>
+<body>
+    <h1>Balance: {{ balance }}</h1>
+    <form action="/bank/transfer/" method="post">
+        {% csrf_token %}
+        <input type="number" name="amount" value="100">
+        <button type="submit">Send (safe: POST + CSRF token)</button>
+    </form>
+</body>
+</html>

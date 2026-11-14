@@ -1,0 +1,11 @@
+# CS50W Lecture 7 - Docker Compose: runs the services together with one command:
+#     docker-compose up        (or: docker compose up)
+# The lecture example also had a Postgres "db" service. This project uses SQLite,
+# so only the web service is needed.
+services:
+  web:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"

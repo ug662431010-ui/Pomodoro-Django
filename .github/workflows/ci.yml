@@ -1,0 +1,47 @@
+# Continuous Integration (CS50W Lecture 7): GitHub runs the tests on every push
+# and pull request, then shows a green tick or a red cross next to the commit.
+name: Testing
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test_project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+
+      - name: Install dependencies (Django + Selenium)
+        run: pip install -r requirements-dev.txt
+
+      - name: Django system check
+        run: python manage.py check
+
+      - name: Make sure no migration is missing
+        run: python manage.py makemigrations --check --dry-run
+
+      # Unit tests + security tests + Selenium browser tests of the Pomodoro app
+      # (Chrome is pre-installed on ubuntu-latest, so the Selenium tests run here too)
+      - name: Run Pomodoro tests
+        run: python manage.py test --verbosity 2
+
+      - name: Run Lecture 7 practice tests (prime, unittest, Selenium counter)
+        working-directory: lecture7_examples
+        run: |
+          python assert.py
+          bash tests0.sh
+          python -m unittest discover -v
+
+      - name: Run Lecture 8 demo tests (XSS, CSRF, cache)
+        working-directory: lecture8_examples
+        run: python manage.py test --verbosity 2
